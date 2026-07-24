@@ -1,0 +1,27 @@
+# Virtual Environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Firebase private key
+serviceAccountKey.json
+
+# Generated files
+output.avi
+driver_report.txt
+
+# Runtime folders
+uploads/
+processed/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code settings (optional)
+.vscode/
