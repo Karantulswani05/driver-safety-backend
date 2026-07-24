@@ -16,12 +16,20 @@ from datetime import datetime
 
 from drowsiness import run_drowsiness_frame
 
+import os
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+firebase_key_path = os.environ.get(
+    "GOOGLE_APPLICATION_CREDENTIALS",
+    "serviceAccountKey.json",
+)
+
+cred = credentials.Certificate(firebase_key_path)
+
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
