@@ -409,16 +409,16 @@ def run_overtaking(video_path):
                     (30,80),cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,255),2)
 
 
-        out.write(frame)
-        cv2.imshow("Overtaking Detection", frame)
+        # out.write(frame)
+        # cv2.imshow("Overtaking Detection", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+        # if cv2.waitKey(1) & 0xFF == ord("q"):
+        #     break
 
 
     cap.release()
     out.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
     print("Final Score:", driver_score)
     if driver_score >= 85:
