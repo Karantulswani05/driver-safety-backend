@@ -62,6 +62,8 @@ last_drowsiness_status = "NORMAL"
 @app.route("/overtaking", methods=["POST"])
 def overtaking():
 
+    print("========== OVERTAKING REQUEST RECEIVED ==========")
+
     global last_overtaking_result
 
     if "file" not in request.files:
