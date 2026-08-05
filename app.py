@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_cors import CORS
 import os
@@ -21,12 +22,12 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-firebase_key_path = os.environ.get(
-    "GOOGLE_APPLICATION_CREDENTIALS",
-    "serviceAccountKey.json",
-)
+firebase_credentials = os.environ.get("FIREBASE_CREDENTIALS")
 
-cred = credentials.Certificate(firebase_key_path)
+if firebase_credentials:
+    cred = credentials.Certificate(json.loads(firebase_credentials))
+else:
+    cred = credentials.Certificate("serviceAccountKey.json")
 
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
