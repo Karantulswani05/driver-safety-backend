@@ -62,57 +62,61 @@ last_drowsiness_status = "NORMAL"
 @app.route("/overtaking", methods=["POST"])
 def overtaking():
 
-    print("========== OVERTAKING REQUEST RECEIVED ==========")
-
     global last_overtaking_result
 
-    if "file" not in request.files:
+    try:
+        print("========== OVERTAKING REQUEST RECEIVED ==========")
 
-        print("No file found in request")
- 
+        if "file" not in request.files:
+            print("No file found in request")
+            return jsonify({"error": "No file received"}), 400
+
+        file = request.files["file"]
+
+        if file.filename == "":
+            print("Empty filename")
+            return jsonify({"error": "Empty file"}), 400
+
+        video_path = os.path.join(UPLOAD_FOLDER, file.filename)
+
+        print("Saving file to:", video_path)
+
+        file.save(video_path)
+
+        print("Video saved successfully")
+
+        from inference import run_overtaking
+
+        print("Calling run_overtaking()")
+
+        result = run_overtaking(video_path)
+
+        print("run_overtaking() finished")
+
+        if "video_filename" in result:
+            result["video_url"] = (
+                request.host_url.rstrip("/")
+                + "/processed/"
+                + result["video_filename"]
+            )
+
+        print("Overtaking Result:", result)
+
+        last_overtaking_result["score"] = result["score"]
+        last_overtaking_result["safe"] = result["safe"]
+        last_overtaking_result["rash"] = result["rash"]
+
+        return jsonify(result)
+
+    except Exception as e:
+        import traceback
+
+        print("========== OVERTAKING ERROR ==========")
+        traceback.print_exc()
+
         return jsonify({
-            "error": "No file received"
-        }), 400
-
-    file = request.files["file"]
-
-    if file.filename == "":
-
-        print("Empty filename")
-
-        return jsonify({
-            "error": "Empty file"
-        }), 400
-
-    video_path = os.path.join(
-        UPLOAD_FOLDER,
-        file.filename
-    )
-
-    file.save(video_path)
-
-    print("Video received:", video_path)
-
-    # Import model
-    from inference import run_overtaking
-
-    result = run_overtaking(video_path)
-
-    if "video_filename" in result:
-        result["video_url"] = (
-            request.host_url.rstrip("/")
-            + "/processed/"
-            + result["video_filename"]
-        )
-
-    print("Overtaking Result:", result)
-
-    # SAVE RESULT
-    last_overtaking_result["score"] = result["score"]
-    last_overtaking_result["safe"] = result["safe"]
-    last_overtaking_result["rash"] = result["rash"]
-
-    return jsonify(result)
+            "error": str(e)
+        }), 500
 
 @app.route("/processed/<filename>", methods=["GET"])
 def processed_video(filename):
